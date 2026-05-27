@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <body style="margin:0;padding:0;background:#000">
+    <div id="player"></div>
+    
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      function post(payload) {
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+        }
+      }
+
+      // read videoId from URL query param
+      var params = new URLSearchParams(window.location.search);
+      var videoId = params.get('videoId');
+
+      function onYouTubeIframeAPIReady() {
+        var player = new YT.Player('player', {
+          videoId: videoId,
+          width: '100%',
+          height: '100%',
+          playerVars: {
+            playsinline: 1,
+            autoplay: 1,
+            mute: 1,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            enablejsapi: 1,
+          },
+          events: {
+            onReady: function() {
+              post({ t: 'ready' });
+            },
+            onStateChange: function(e) {
+              post({ t: 'state', state: e.data });
+            }
+          }
+        });
+
+        window.__ytCommand = function(func, args) {
+          player[func].apply(player, args);
+        };
+
+        setInterval(function() {
+          post({ t: 'time', value: player.getCurrentTime() });
+          post({ t: 'duration', value: player.getDuration() });
+        }, 500);
+      }
+    </script>
+  </body>
+</html>
