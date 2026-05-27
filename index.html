@@ -14,12 +14,14 @@
       // read videoId from URL query param
       var params = new URLSearchParams(window.location.search);
       var videoId = params.get('videoId');
+      var width = params.get('width') || window.innerWidth;
+      var height = params.get('height') || window.innerHeight;
 
       function onYouTubeIframeAPIReady() {
         var player = new YT.Player('player', {
           videoId: videoId,
-          width: '100%',
-          height: '100%',
+          width: width,
+          height: height,
           playerVars: {
             playsinline: 1,
             autoplay: 1,
